@@ -22,6 +22,11 @@ class ReferrerBrandForm
                     ->searchable()
                     ->preload()
                     ->required(),
+                Select::make('company_id')
+                    ->relationship('company', 'name', modifyQueryUsing: fn ($query) => $query->orderBy('name'))
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Select::make('brand_id')
                     ->relationship('brandReferral', 'name', modifyQueryUsing: fn ($query) => $query->orderBy('name'))
                     ->searchable()

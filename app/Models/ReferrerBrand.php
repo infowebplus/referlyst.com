@@ -22,6 +22,7 @@ class ReferrerBrand extends Model
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'brand_id',
         'service_id',
         'comission_type',
@@ -59,6 +60,16 @@ class ReferrerBrand extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the company for this referral.
+     *
+     * @return BelongsTo<Company, ReferrerBrand>
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**

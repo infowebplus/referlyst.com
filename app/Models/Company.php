@@ -29,4 +29,24 @@ class Company extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * Get the orders that belong to the company.
+     *
+     * @return HasMany<Order>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the referrer brands that belong to the company.
+     *
+     * @return HasMany<ReferrerBrand>
+     */
+    public function referrerBrands(): HasMany
+    {
+        return $this->hasMany(ReferrerBrand::class);
+    }
 }
