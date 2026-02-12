@@ -18,6 +18,7 @@ class Package extends Model
      */
     protected $fillable = [
         'name',
+        'default_package',
         'price',
         'description',
         'email_notifications',
@@ -36,6 +37,7 @@ class Package extends Model
     protected function casts(): array
     {
         return [
+            'default_package' => 'boolean',
             'price' => 'decimal:2',
             'email_notifications' => 'boolean',
             'commission_tracking' => 'boolean',

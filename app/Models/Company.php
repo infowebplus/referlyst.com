@@ -31,6 +31,16 @@ class Company extends Model
     }
 
     /**
+     * Get the brand referrals that belong to the company.
+     *
+     * @return HasMany<BrandReferral>
+     */
+    public function brandReferrals(): HasMany
+    {
+        return $this->hasMany(BrandReferral::class, 'company_id');
+    }
+
+    /**
      * Get the orders that belong to the company.
      *
      * @return HasMany<Order>

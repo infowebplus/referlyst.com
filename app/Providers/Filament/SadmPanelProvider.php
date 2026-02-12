@@ -2,6 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\Addons\AddonResource;
+use App\Filament\Resources\BrandPackages\BrandPackageResource;
+use App\Filament\Resources\BrandReferrals\BrandReferralResource;
+use App\Filament\Resources\Companies\CompanyResource;
+use App\Filament\Resources\Orders\OrdersResource;
+use App\Filament\Resources\Packages\PackageResource;
+use App\Filament\Resources\ReferrerBrands\ReferrerBrandResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Filament\Widgets\OrdersCountChart;
 use App\Filament\Widgets\OrdersRevenueChart;
 use App\Filament\Widgets\RecentOrdersWidget;
@@ -33,7 +41,16 @@ class SadmPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            ->resources([
+                AddonResource::class,
+                BrandPackageResource::class,
+                BrandReferralResource::class,
+                CompanyResource::class,
+                OrdersResource::class,
+                PackageResource::class,
+                ReferrerBrandResource::class,
+                UserResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,

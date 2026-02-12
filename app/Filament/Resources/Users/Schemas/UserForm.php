@@ -39,7 +39,6 @@ class UserForm
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(false)
-                    ->required(fn ($get): bool => $get('type') !== 'admin')
                     ->visible(fn ($get): bool => $get('type') !== 'admin')
                     ->dehydrateStateUsing(fn ($state, $get) => $get('type') === 'admin' ? null : $state),
             ]);

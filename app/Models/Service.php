@@ -17,12 +17,23 @@ class Service extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'brand_id',
         'name',
         'commission_type',
         'commission',
         'texts',
         'pictures',
     ];
+
+    /**
+     * Get the brand that owns the service.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\BrandReferral, Service>
+     */
+    public function brandReferral(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(BrandReferral::class, 'brand_id');
+    }
 
     /**
      * Get the attributes that should be cast.
