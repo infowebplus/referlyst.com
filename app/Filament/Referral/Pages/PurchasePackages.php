@@ -35,7 +35,7 @@ class PurchasePackages extends Page
 
     protected static ?string $title = 'Purchase packages';
 
-    protected string $view = 'filament-panels::pages.page';
+    protected string $view = 'filament.referral.pages.purchase-packages';
 
     public static function getNavigationSort(): int
     {
