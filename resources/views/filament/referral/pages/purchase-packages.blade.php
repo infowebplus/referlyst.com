@@ -1,5 +1,3 @@
 <x-filament-panels::page>
-    <div class="p-6">
-        {{ $this->content }}
-    </div>
+    {{ $this->content }}
 </x-filament-panels::page>
