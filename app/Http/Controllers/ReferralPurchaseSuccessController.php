@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\StripeCheckoutService;
-use Filament\Support\Facades\Filament;
+use Filament\Facades\Filament;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

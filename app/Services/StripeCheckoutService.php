@@ -61,7 +61,7 @@ class StripeCheckoutService
         }
 
         $successUrl = URL::route('referral.purchase.success', [], true).'?session_id={CHECKOUT_SESSION_ID}';
-        $cancelUrl = \Filament\Support\Facades\Filament::getPanel('referral')->getUrl().'/purchase-packages';
+        $cancelUrl = \Filament\Facades\Filament::getPanel('referral')->getUrl().'/purchase-packages';
 
         $session = $stripe->checkout->sessions->create([
             'payment_method_types' => ['card'],
