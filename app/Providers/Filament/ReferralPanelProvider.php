@@ -26,6 +26,7 @@ class ReferralPanelProvider extends PanelProvider
             ->id('referral')
             ->path('referral')
             ->login()
+            ->passwordReset()
             ->registration(\App\Filament\Referral\Auth\Register::class)
             ->emailVerification()
             ->colors([

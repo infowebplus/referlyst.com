@@ -38,6 +38,7 @@ class SadmPanelProvider extends PanelProvider
             ->id('sadm')
             ->path('sadm')
             ->login()
+            ->passwordReset()
             ->colors([
                 'primary' => Color::Amber,
             ])
