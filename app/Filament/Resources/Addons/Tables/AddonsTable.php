@@ -17,7 +17,10 @@ class AddonsTable
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('EUR')
+                    ->sortable(),
+                TextColumn::make('validity_period')
+                    ->formatStateUsing(fn (?string $state) => $state === 'annual' ? 'Annual' : $state ?? '—')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

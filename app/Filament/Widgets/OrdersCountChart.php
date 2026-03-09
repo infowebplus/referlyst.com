@@ -13,8 +13,13 @@ class OrdersCountChart extends ChartWidget
 
     protected function getData(): array
     {
+        $driver = Order::query()->getConnection()->getDriverName();
+        $yearMonthSelect = $driver === 'sqlite'
+            ? 'strftime(\'%Y\', date) as year, cast(strftime(\'%m\', date) as integer) as month, COUNT(*) as count'
+            : 'YEAR(date) as year, MONTH(date) as month, COUNT(*) as count';
+
         $orders = Order::query()
-            ->selectRaw('YEAR(date) as year, MONTH(date) as month, COUNT(*) as count')
+            ->selectRaw($yearMonthSelect)
             ->whereNotNull('date')
             ->groupBy('year', 'month')
             ->orderBy('year')
@@ -39,7 +44,8 @@ class OrdersCountChart extends ChartWidget
 
             $yearOrders = $orders->where('year', $year);
             foreach ($yearOrders as $order) {
-                $data[$order->month - 1] = $order->count;
+                $monthIndex = (int) $order->month - 1;
+                $data[$monthIndex] = $order->count;
             }
 
             $datasets[] = [

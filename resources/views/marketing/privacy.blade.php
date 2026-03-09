@@ -1,0 +1,56 @@
+@extends('layouts.marketing')
+
+@section('title', 'Privacy Policy – ' . config('app.name'))
+
+@section('content')
+    <section class="bg-gray-950 py-24">
+        <x-marketing.container class="max-w-3xl">
+            <h1 class="text-5xl font-bold tracking-tight text-white">Privacy Policy</h1>
+            <p class="mt-4 text-sm text-gray-500">Last updated: {{ now()->format('F j, Y') }}</p>
+
+            <div class="mt-14 space-y-12 text-gray-400">
+                <div>
+                    <h2 class="text-xl font-semibold text-white">1. Introduction</h2>
+                    <p class="mt-3 text-lg text-gray-300 leading-relaxed">
+                        Referlyst ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform and services.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-white">2. Information we collect</h2>
+                    <p class="mt-3 text-lg text-gray-300 leading-relaxed">
+                        We collect information you provide directly (such as name, email address, and company details when you register), information about how you use our service (including referral links, conversions, and dashboard usage), and technical data (such as IP address and browser type) to operate and improve our platform.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-white">3. How we use your information</h2>
+                    <p class="mt-3 text-lg text-gray-300 leading-relaxed">
+                        We use your information to provide and improve our services, process transactions, send important notices, prevent fraud, and comply with legal obligations. We do not sell your personal information to third parties for marketing purposes.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-white">4. Data security</h2>
+                    <p class="mt-3 text-lg text-gray-300 leading-relaxed">
+                        We use industry-standard measures to protect your data, including encryption in transit and at rest, access controls, and regular security assessments.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-white">5. Your rights</h2>
+                    <p class="mt-3 text-lg text-gray-300 leading-relaxed">
+                        Depending on your location, you may have the right to access, correct, or delete your personal data, or to object to or restrict certain processing. Contact us at <a href="mailto:privacy@referlyst.com" class="text-blue-400 hover:text-blue-300 transition-colors">privacy@referlyst.com</a> to exercise these rights.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-white">6. Contact</h2>
+                    <p class="mt-3 text-lg text-gray-300 leading-relaxed">
+                        For questions about this Privacy Policy, contact us at <a href="mailto:privacy@referlyst.com" class="text-blue-400 hover:text-blue-300 transition-colors">privacy@referlyst.com</a> or via our <a href="{{ route('contact') }}" class="text-blue-400 hover:text-blue-300 transition-colors">Contact</a> page.
+                    </p>
+                </div>
+            </div>
+        </x-marketing.container>
+    </section>
+@endsection

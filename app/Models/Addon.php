@@ -20,6 +20,7 @@ class Addon extends Model
         'name',
         'price',
         'description',
+        'validity_period',
     ];
 
     /**

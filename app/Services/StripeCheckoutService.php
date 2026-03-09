@@ -114,6 +114,15 @@ class StripeCheckoutService
             if ($packageId) {
                 $package = Package::find($packageId);
                 if ($package) {
+                    // Expire current active package(s) for this brand so the new one becomes the only active (upgrade).
+                    \App\Models\BrandPackage::query()
+                        ->where('brand_id', $brandId)
+                        ->where('model_type', Package::class)
+                        ->where(function ($q) use ($now) {
+                            $q->whereNull('expiry_date')->orWhere('expiry_date', '>', $now);
+                        })
+                        ->update(['expiry_date' => $now]);
+
                     \App\Models\Order::create([
                         'user_id' => $user->id,
                         'company_id' => $user->company_id,
@@ -132,7 +141,7 @@ class StripeCheckoutService
                         'model_type' => Package::class,
                         'price' => $package->price,
                         'purchase_date' => $now,
-                        'expiry_date' => null,
+                        'expiry_date' => $now->copy()->addYear(),
                         'details' => null,
                     ]);
                 }
@@ -153,13 +162,16 @@ class StripeCheckoutService
                         'paid_date' => $now,
                         'paid_response' => null,
                     ]);
+                    $addonMonths = isset($addon->validity_period) && (int) $addon->validity_period > 0
+                        ? (int) $addon->validity_period
+                        : 12;
                     \App\Models\BrandPackage::create([
                         'brand_id' => $brandId,
                         'model_id' => $addon->id,
                         'model_type' => Addon::class,
                         'price' => $addon->price,
                         'purchase_date' => $now,
-                        'expiry_date' => null,
+                        'expiry_date' => $now->copy()->addMonths($addonMonths),
                         'details' => null,
                     ]);
                 }

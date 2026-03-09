@@ -29,6 +29,7 @@ class BrandReferral extends Model
         'name',
         'logo',
         'website',
+        'correspondence_email',
         'terms_and_conditions',
         'ca',
         'subdomain_for_landing_pages',
@@ -38,6 +39,17 @@ class BrandReferral extends Model
         'smtp_password',
         'smtp_security',
         'colors',
+        'landing_theme',
+        'api_token',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization (e.g. API responses).
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'api_token',
     ];
 
     /**
@@ -73,6 +85,16 @@ class BrandReferral extends Model
     }
 
     /**
+     * API tokens (keys) for this brand. Used when API Access addon is active.
+     *
+     * @return HasMany<BrandApiToken, BrandReferral>
+     */
+    public function brandApiTokens(): HasMany
+    {
+        return $this->hasMany(BrandApiToken::class, 'brand_id');
+    }
+
+    /**
      * Get the referrer brands (allocations) for this brand.
      *
      * @return HasMany<ReferrerBrand, BrandReferral>
@@ -90,6 +112,41 @@ class BrandReferral extends Model
     public function services(): HasMany
     {
         return $this->hasMany(Service::class, 'brand_id');
+    }
+
+    /**
+     * Get the referrer limit for this brand: package limit plus +500 per active "Extra Referrers" addon.
+     */
+    public function maxReferrers(): int
+    {
+        $package = $this->active_package;
+        $base = $package ? (int) $package->no_of_referrers : 0;
+
+        $extraReferrersAddons = $this->brandPackages()
+            ->where('model_type', Addon::class)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>', now());
+            })
+            ->whereHasMorph('model', [Addon::class], fn ($q) => $q->where('name', 'Extra Referrers'))
+            ->count();
+
+        return $base + (int) $extraReferrersAddons * 500;
+    }
+
+    /**
+     * Whether this brand has the "API Access" addon active (for embedding the referral form via API).
+     */
+    public function hasApiAccess(): bool
+    {
+        return $this->brandPackages()
+            ->where('model_type', Addon::class)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>', now());
+            })
+            ->whereHasMorph('model', [Addon::class], fn ($q) => $q->where('name', 'API Access'))
+            ->exists();
     }
 
     /**
@@ -141,6 +198,52 @@ class BrandReferral extends Model
             ->get();
 
         return $records->map(fn (BrandPackage $bp) => $bp->model)->filter();
+    }
+
+    /**
+     * Expiry date of the active package (from BrandPackage), or null if no expiry.
+     */
+    public function getActivePackageExpiryAttribute(): ?\Carbon\Carbon
+    {
+        $bp = $this->brandPackages()
+            ->where('model_type', Package::class)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>', now());
+            })
+            ->first();
+
+        return $bp?->expiry_date;
+    }
+
+    /**
+     * Active add-ons with their expiry dates. Keys: id, name, expiry_date.
+     *
+     * @return \Illuminate\Support\Collection<int, array{id: int, name: string, expiry_date: \Carbon\Carbon|null}>
+     */
+    public function getActiveAddonsWithExpiryAttribute(): \Illuminate\Support\Collection
+    {
+        return $this->brandPackages()
+            ->where('model_type', Addon::class)
+            ->where(function ($q) {
+                $q->whereNull('expiry_date')
+                    ->orWhere('expiry_date', '>', now());
+            })
+            ->with('model')
+            ->get()
+            ->map(function (BrandPackage $bp) {
+                $addon = $bp->model;
+                if (! $addon instanceof Addon) {
+                    return null;
+                }
+
+                return [
+                    'id' => $addon->id,
+                    'name' => $addon->name,
+                    'expiry_date' => $bp->expiry_date,
+                ];
+            })
+            ->filter();
     }
 
     /**

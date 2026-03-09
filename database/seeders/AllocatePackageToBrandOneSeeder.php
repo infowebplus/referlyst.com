@@ -44,7 +44,7 @@ class AllocatePackageToBrandOneSeeder extends Seeder
             'model_type' => Package::class,
             'price' => $package->price,
             'purchase_date' => now(),
-            'expiry_date' => null,
+            'expiry_date' => now()->addYear(),
         ]);
 
         $this->command->info("Allocated package \"{$package->name}\" (no_of_referrers: {$package->no_of_referrers}) to Brand 1.");

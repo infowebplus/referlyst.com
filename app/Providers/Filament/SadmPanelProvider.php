@@ -20,7 +20,6 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -39,8 +38,9 @@ class SadmPanelProvider extends PanelProvider
             ->path('sadm')
             ->login()
             ->passwordReset()
+            ->favicon(asset('images/referlyst-icon.png'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#0acd5a',
             ])
             ->resources([
                 AddonResource::class,

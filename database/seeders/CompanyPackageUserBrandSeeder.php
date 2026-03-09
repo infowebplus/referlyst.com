@@ -5,11 +5,9 @@ namespace Database\Seeders;
 use App\CommissionType;
 use App\Models\BrandReferral;
 use App\Models\Company;
-use App\Models\Package;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class CompanyPackageUserBrandSeeder extends Seeder
@@ -19,59 +17,13 @@ class CompanyPackageUserBrandSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create company
+        // 1. Create company (packages Free, Starter, Growth come from AdminAndPackagesSeeder)
         $company = Company::firstOrCreate(
             ['name' => 'Referlyst Demo Company'],
             ['name' => 'Referlyst Demo Company']
         );
 
-        // 2. Create 3 packages: free, pro, ultimate
-        $free = Package::firstOrCreate(
-            ['name' => 'Free'],
-            [
-                'default_package' => true,
-                'price' => 0,
-                'description' => 'Free tier with basic referral features.',
-                'email_notifications' => true,
-                'no_of_referrers' => 5,
-                'no_of_referrers_brands' => 2,
-                'commission_tracking' => true,
-                'export_csv' => false,
-                'custom_branding' => false,
-            ]
-        );
-
-        Package::firstOrCreate(
-            ['name' => 'Pro'],
-            [
-                'default_package' => false,
-                'price' => 49.00,
-                'description' => 'Pro tier with more referrers and export.',
-                'email_notifications' => true,
-                'no_of_referrers' => 25,
-                'no_of_referrers_brands' => 10,
-                'commission_tracking' => true,
-                'export_csv' => true,
-                'custom_branding' => false,
-            ]
-        );
-
-        Package::firstOrCreate(
-            ['name' => 'Ultimate'],
-            [
-                'default_package' => false,
-                'price' => 149.00,
-                'description' => 'Ultimate tier with unlimited referrers and custom branding.',
-                'email_notifications' => true,
-                'no_of_referrers' => 999,
-                'no_of_referrers_brands' => 999,
-                'commission_tracking' => true,
-                'export_csv' => true,
-                'custom_branding' => true,
-            ]
-        );
-
-        // 3. Create 3 users with random passwords (updateOrCreate so re-run shows new passwords)
+        // 2. Create 3 users with random passwords (updateOrCreate so re-run shows new passwords)
         $password1 = Str::random(16);
         $password2 = Str::random(16);
         $password3 = Str::random(16);
@@ -82,7 +34,7 @@ class CompanyPackageUserBrandSeeder extends Seeder
                 'name' => 'Gabriel',
                 'surname' => 'Fieraru',
                 'email_verified_at' => now(),
-                'password' => Hash::make($password1),
+                'password' => $password1,
                 'company_id' => null,
                 'type' => 'admin',
             ]
@@ -94,7 +46,7 @@ class CompanyPackageUserBrandSeeder extends Seeder
                 'name' => 'Contact',
                 'surname' => 'Fieraru',
                 'email_verified_at' => now(),
-                'password' => Hash::make($password2),
+                'password' => $password2,
                 'company_id' => $company->id,
                 'type' => 'referral',
             ]
@@ -106,7 +58,7 @@ class CompanyPackageUserBrandSeeder extends Seeder
                 'name' => 'George',
                 'surname' => 'Barbudev',
                 'email_verified_at' => now(),
-                'password' => Hash::make($password3),
+                'password' => $password3,
                 'company_id' => null,
                 'type' => 'admin',
             ]

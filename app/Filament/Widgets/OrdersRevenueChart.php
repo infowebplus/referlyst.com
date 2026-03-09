@@ -13,8 +13,13 @@ class OrdersRevenueChart extends ChartWidget
 
     protected function getData(): array
     {
+        $driver = Order::query()->getConnection()->getDriverName();
+        $yearMonthSelect = $driver === 'sqlite'
+            ? 'strftime(\'%Y\', date) as year, cast(strftime(\'%m\', date) as integer) as month, SUM(price) as total'
+            : 'YEAR(date) as year, MONTH(date) as month, SUM(price) as total';
+
         $orders = Order::query()
-            ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(price) as total')
+            ->selectRaw($yearMonthSelect)
             ->whereNotNull('date')
             ->groupBy('year', 'month')
             ->orderBy('year')
@@ -39,7 +44,8 @@ class OrdersRevenueChart extends ChartWidget
 
             $yearOrders = $orders->where('year', $year);
             foreach ($yearOrders as $order) {
-                $data[$order->month - 1] = (float) $order->total;
+                $monthIndex = (int) $order->month - 1;
+                $data[$monthIndex] = (float) $order->total;
             }
 
             $datasets[] = [

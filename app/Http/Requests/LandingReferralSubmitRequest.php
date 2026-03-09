@@ -11,23 +11,7 @@ class LandingReferralSubmitRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $brandId = session('landing_brand_id');
-
-        return $this->user() && $brandId;
-    }
-
-    protected function failedAuthorization(): void
-    {
-        throw new \Illuminate\Auth\AuthenticationException(
-            'Please log in to submit referrals.',
-            [],
-            $this->redirectToLogin()
-        );
-    }
-
-    protected function redirectToLogin(): string
-    {
-        return url('/referral/login');
+        return (bool) session('landing_brand_id');
     }
 
     /**
@@ -37,8 +21,7 @@ class LandingReferralSubmitRequest extends FormRequest
     {
         $brandId = (int) session('landing_brand_id');
         $brand = BrandReferral::query()->find($brandId);
-        $activePackage = $brand?->active_package;
-        $maxReferrers = $activePackage?->no_of_referrers ?? 0;
+        $maxReferrers = $brand?->maxReferrers() ?? 0;
         $currentCount = ReferrerBrand::query()->where('brand_id', $brandId)->count();
         $slotsRemaining = max(0, $maxReferrers - $currentCount);
 
@@ -46,11 +29,18 @@ class LandingReferralSubmitRequest extends FormRequest
             ? $brand->services()->pluck('id')->map(fn ($id) => (string) $id)->all()
             : [];
 
+        $hasTerms = $brand && $brand->terms_and_conditions;
+
         return [
             'service_id' => [
                 'required',
                 Rule::in($serviceIds),
             ],
+            'referrer_first_name' => ['required', 'string', 'max:255'],
+            'referrer_surname' => ['required', 'string', 'max:255'],
+            'referrer_email' => ['required', 'email', 'max:255'],
+            'referrer_phone' => ['nullable', 'string', 'max:255'],
+            'terms_accepted' => $hasTerms ? ['accepted'] : ['nullable'],
             'recommend_to' => ['required', 'array', 'min:1', 'max:'.$slotsRemaining],
             'recommend_to.*.name' => ['required', 'string', 'max:255'],
             'recommend_to.*.surname' => ['required', 'string', 'max:255'],
@@ -67,6 +57,11 @@ class LandingReferralSubmitRequest extends FormRequest
         return [
             'service_id.required' => 'Please select a service.',
             'service_id.in' => 'The selected service is not valid for this brand.',
+            'referrer_first_name.required' => 'Your first name is required.',
+            'referrer_surname.required' => 'Your last name is required.',
+            'referrer_email.required' => 'Your email is required.',
+            'referrer_email.email' => 'Please enter a valid email address for your contact details.',
+            'terms_accepted.accepted' => 'You must accept the terms & conditions to continue.',
             'recommend_to.required' => 'Please add at least one person to recommend.',
             'recommend_to.max' => 'You cannot add more referrals than your package allows.',
             'recommend_to.*.name.required' => 'Name is required.',

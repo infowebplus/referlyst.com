@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Packages\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -15,37 +16,27 @@ class PackagesTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('price')
-                    ->money()
-                    ->sortable(),
-                TextColumn::make('email_notifications')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('no_of_referrers')
-                    ->numeric()
+                    ->money('EUR')
                     ->sortable(),
                 TextColumn::make('no_of_referrers_brands')
+                    ->label('No of referrers brands')
                     ->numeric()
-                    ->sortable(),
-                TextColumn::make('commission_tracking')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('export_csv')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('custom_branding')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->formatStateUsing(fn ($state) => $state > 0 ? (string) $state : '∞'),
+                TextColumn::make('no_of_referrers')
+                    ->label('No of referrers')
+                    ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->formatStateUsing(fn ($state) => $state > 0 ? (string) $state : '∞'),
+                IconColumn::make('custom_branding')
+                    ->boolean()
+                    ->sortable()
+                    ->label('Custom branding'),
             ])
+            ->defaultSort('sort_order')
             ->filters([
                 //
             ])

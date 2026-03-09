@@ -29,11 +29,17 @@ class PurchasePackages extends Page
      */
     public ?array $data = [];
 
+    /** When true, wizard starts on Add-ons step (from "Add addons" link with brand_id + addons_only). */
+    public bool $startOnAddonsStep = false;
+
+    /** When true, wizard starts on Plan step (from "Upgrade package" link with brand_id). */
+    public bool $startOnPlanStep = false;
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?string $navigationLabel = 'Purchase packages';
 
-    protected static ?string $title = 'Purchase packages';
+    protected static ?string $title = 'Get your plan';
 
     protected string $view = 'filament.referral.pages.purchase-packages';
 
@@ -53,7 +59,33 @@ class PurchasePackages extends Page
             session()->forget('error');
         }
         $this->callHook('beforeFill');
-        $this->form->fill();
+
+        $defaults = [];
+        $brandId = request()->integer('brand_id');
+        $addonsOnly = request()->boolean('addons_only');
+
+        if ($brandId) {
+            $companyId = auth()->user()?->company_id;
+            $brand = $companyId
+                ? BrandReferral::query()->where('company_id', $companyId)->where('id', $brandId)->first()
+                : null;
+
+            if ($brand) {
+                $defaults['brand_id'] = $brandId;
+
+                if ($addonsOnly) {
+                    $this->startOnAddonsStep = true;
+                    $defaults['package_id'] = $brand->active_package?->id
+                        ?? Package::query()->where('default_package', true)->first()?->id;
+                    $defaults['addon_ids'] = $brand->activeAddonsWithExpiry->pluck('id')->values()->all();
+                } else {
+                    $this->startOnPlanStep = true;
+                }
+            }
+        }
+
+        $this->form->fill($defaults);
+
         $this->callHook('afterFill');
     }
 
@@ -69,11 +101,12 @@ class PurchasePackages extends Page
 
         return $schema->components([
             Wizard::make([
-                Step::make('Select brand')
+                Step::make('Brand')
+                    ->description('Which brand is this for?')
                     ->schema([
                         Group::make([
                             \Filament\Forms\Components\Select::make('brand_id')
-                                ->label('Brand')
+                                ->label('')
                                 ->options(
                                     BrandReferral::query()
                                         ->where('company_id', $companyId)
@@ -83,101 +116,125 @@ class PurchasePackages extends Page
                                 ->required()
                                 ->searchable()
                                 ->live(),
-                        ])->extraAttributes(['style' => 'padding: 1.5rem;']),
+                        ]),
                     ]),
-                Step::make('Select package')
-                    ->description('Optional: skip if you only want to buy addons.')
+                Step::make('Plan')
+                    ->description('Upgrade to a new plan, or skip to add-ons only.')
                     ->schema([
                         Group::make([
                             \Filament\Forms\Components\Select::make('package_id')
-                                ->label('Package')
-                                ->options(Package::query()->orderBy('name')->pluck('name', 'id'))
-                                ->searchable()
-                                ->live()
-                                ->rule(function (Get $get): \Closure {
-                                    return function (string $attribute, $value, \Closure $fail) use ($get): void {
-                                        if (! $value) {
-                                            return;
-                                        }
-                                        $brandId = $get('brand_id');
-                                        if (! $brandId) {
-                                            return;
-                                        }
+                                ->label('')
+                                ->options(function (Get $get): array {
+                                    $brandId = $get('brand_id');
+                                    $query = Package::query()->orderBy('price');
+                                    if ($brandId) {
                                         $brand = BrandReferral::find($brandId);
-                                        if ($brand && $brand->active_package) {
-                                            $fail('This brand already has an active package. You cannot purchase another package, or skip this step to buy addons only.');
+                                        if ($brand?->active_package) {
+                                            $query->where('id', '!=', $brand->active_package->id);
                                         }
-                                    };
-                                }),
+                                    }
+
+                                    return $query->pluck('name', 'id')->toArray();
+                                })
+                                ->searchable()
+                                ->live(),
                             \Filament\Forms\Components\Placeholder::make('skip_hint')
                                 ->label('')
-                                ->content(new HtmlString('<p class="text-sm text-gray-500 dark:text-gray-400">You may skip this step if you only want to purchase addons (no new package).</p>')),
-                        ])->extraAttributes(['style' => 'padding: 1.5rem;']),
+                                ->content(new HtmlString('<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Skip this step to buy add-ons only.</p>')),
+                        ]),
                     ]),
-                Step::make('Select addons')
+                Step::make('Add-ons')
+                    ->description('Current add-ons are pre-checked with expiry. Select more to purchase.')
                     ->schema([
                         Group::make([
                             \Filament\Forms\Components\CheckboxList::make('addon_ids')
-                                ->label('Addons')
+                                ->label('')
                                 ->options(function (Get $get): array {
+                                    $brandId = $get('brand_id');
                                     $packageId = $get('package_id');
+                                    $brand = $brandId ? BrandReferral::find($brandId) : null;
+                                    $activeWithExpiry = $brand ? $brand->activeAddonsWithExpiry : collect();
+                                    $includedInPackage = $packageId
+                                        ? \DB::table('addon_package')->where('package_id', $packageId)->pluck('addon_id')->all()
+                                        : [];
+                                    $activeIds = $activeWithExpiry->pluck('id')->all();
+
+                                    $options = [];
+                                    foreach ($activeWithExpiry as $item) {
+                                        $expiry = $item['expiry_date'] instanceof \Carbon\Carbon
+                                            ? $item['expiry_date']->format('d/m/Y')
+                                            : '—';
+                                        $options[$item['id']] = $item['name'].' (expires '.$expiry.')';
+                                    }
                                     $addonsQuery = Addon::query()->orderBy('name');
-                                    if ($packageId) {
-                                        $includedIds = \DB::table('addon_package')
-                                            ->where('package_id', $packageId)
-                                            ->pluck('addon_id');
-                                        $addonsQuery->whereNotIn('id', $includedIds);
+                                    $addonsQuery->whereNotIn('id', array_keys($options));
+                                    if ($includedInPackage !== []) {
+                                        $addonsQuery->whereNotIn('id', $includedInPackage);
+                                    }
+                                    foreach ($addonsQuery->get() as $addon) {
+                                        $options[$addon->id] = $addon->name;
                                     }
 
-                                    return $addonsQuery->pluck('name', 'id')->toArray();
+                                    return $options;
                                 })
                                 ->columns(1),
-                        ])->extraAttributes(['style' => 'padding: 1.5rem;']),
+                        ]),
                     ]),
-                Step::make('Review & pay')
+                Step::make('Review')
+                    ->description('Check your selection and pay securely.')
                     ->schema([
                         Group::make([
                             \Filament\Forms\Components\Placeholder::make('summary')
-                                ->label('Order summary')
-                                ->content(function (Get $get): string {
+                                ->label('')
+                                ->content(function (Get $get): HtmlString {
                                     $brandId = $get('brand_id');
                                     $packageId = $get('package_id');
                                     $addonIds = $get('addon_ids') ?? [];
+                                    $addonIds = array_values($addonIds);
+                                    $brand = $brandId ? BrandReferral::find($brandId) : null;
+                                    $activeWithExpiry = $brand ? $brand->activeAddonsWithExpiry->keyBy('id') : collect();
+                                    $newAddonIds = $brand
+                                        ? array_values(array_diff($addonIds, $activeWithExpiry->pluck('id')->all()))
+                                        : $addonIds;
                                     $lines = [];
-                                    if ($brandId) {
-                                        $brand = BrandReferral::find($brandId);
-                                        $lines[] = 'Brand: '.($brand?->name ?? '—');
-                                    }
-                                    if ($packageId) {
-                                        $pkg = Package::find($packageId);
-                                        $lines[] = 'Package: '.($pkg?->name ?? '—').' — '.($pkg ? number_format($pkg->price, 2).' EUR' : '');
-                                    }
-                                    foreach ($addonIds as $addonId) {
-                                        $addon = Addon::find($addonId);
-                                        $lines[] = 'Addon: '.($addon?->name ?? '—').' — '.($addon ? number_format($addon->price, 2).' EUR' : '');
-                                    }
                                     $total = 0;
-                                    if ($packageId && $pkg = Package::find($packageId)) {
-                                        $total += (float) $pkg->price;
+                                    if ($brandId) {
+                                        $lines[] = '<li><span>Brand</span><span>'.e($brand?->name ?? '—').'</span></li>';
+                                    }
+                                    if ($packageId && ($pkg = Package::find($packageId))) {
+                                        $price = (float) $pkg->price;
+                                        $lines[] = '<li><span>'.e($pkg->name).'</span><span>'.($price > 0 ? number_format($price, 2).' EUR' : 'Free').'</span></li>';
+                                        $total += $price;
                                     }
                                     foreach ($addonIds as $addonId) {
                                         $addon = Addon::find($addonId);
-                                        if ($addon) {
+                                        if (! $addon) {
+                                            continue;
+                                        }
+                                        $isCurrent = $activeWithExpiry->has($addonId);
+                                        if ($isCurrent) {
+                                            $item = $activeWithExpiry->get($addonId);
+                                            $expiry = isset($item['expiry_date']) && $item['expiry_date'] instanceof \Carbon\Carbon
+                                                ? $item['expiry_date']->format('d/m/Y')
+                                                : '—';
+                                            $lines[] = '<li><span>'.e($addon->name).' (current, expires '.$expiry.')</span><span>—</span></li>';
+                                        } else {
+                                            $lines[] = '<li><span>'.e($addon->name).'</span><span>'.number_format((float) $addon->price, 2).' EUR</span></li>';
                                             $total += (float) $addon->price;
                                         }
                                     }
-                                    $lines[] = '---';
-                                    $lines[] = 'Total: '.number_format($total, 2).' EUR';
+                                    $lines[] = '<li class="purchase-summary-total"><span>Total</span><span>'.number_format($total, 2).' EUR</span></li>';
+                                    $html = '<div class="purchase-summary-box"><div class="purchase-summary-title">Order summary</div><ul class="purchase-summary-list">'.implode('', $lines).'</ul></div>';
 
-                                    return implode("\n", $lines);
+                                    return new HtmlString($html);
                                 }),
-                        ])->extraAttributes(['style' => 'padding: 1.5rem;']),
+                        ]),
                     ]),
             ])
                 ->contained(true)
-                ->startOnStep(1)
+                ->startOnStep($this->startOnAddonsStep ? 3 : ($this->startOnPlanStep ? 2 : 1))
                 ->skippable(true)
-                ->submitAction(new HtmlString('<button type="button" wire:click="proceedToPayment" class="fi-btn relative grid-flow-col items-center justify-center font-semibold outline-none transition duration-75 focus-visible:ring-2 rounded-lg fi-btn-color-primary fi-btn-size-md fi-btn-outlined gap-1.5 px-3 py-2 text-sm inline-grid shadow-sm bg-transparent border border-custom-500 text-custom-600 hover:bg-custom-500/10 focus-visible:ring-custom-500/50 dark:border-custom-400 dark:text-custom-400 dark:hover:bg-custom-400/10 dark:focus-visible:ring-custom-400/50 fi-btn">Pay with Stripe</button>'))
+                ->submitAction(new HtmlString('<button type="button" wire:click="proceedToPayment" class="purchase-flow-cta fi-btn fi-btn-color-primary fi-btn-size-lg grid-flow-col items-center justify-center gap-2 rounded-xl font-semibold shadow-sm outline-none transition focus-visible:ring-2 fi-btn">Pay securely</button>'))
                 ->alpineSubmitHandler('$wire.proceedToPayment()'),
         ]);
     }
@@ -216,6 +273,7 @@ class PurchasePackages extends Page
         $brandId = $data['brand_id'] ?? null;
         $packageId = $data['package_id'] ?? null;
         $addonIds = $data['addon_ids'] ?? [];
+        $addonIds = array_values($addonIds);
 
         if (! $brandId) {
             Notification::make()->danger()->title('Please select a brand.')->send();
@@ -223,8 +281,18 @@ class PurchasePackages extends Page
             return;
         }
 
-        if (! $packageId && empty($addonIds)) {
-            Notification::make()->danger()->title('Please select at least one package or addon.')->send();
+        $brand = BrandReferral::find($brandId);
+        if (! $brand) {
+            Notification::make()->danger()->title('Invalid brand.')->send();
+
+            return;
+        }
+
+        $activeAddonIds = $brand->activeAddonsWithExpiry->pluck('id')->all();
+        $addonIdsToCharge = array_values(array_diff($addonIds, $activeAddonIds));
+
+        if (empty($addonIdsToCharge) && ! $packageId) {
+            Notification::make()->danger()->title('Please select at least one package or new add-on to purchase.')->send();
 
             return;
         }
@@ -236,12 +304,13 @@ class PurchasePackages extends Page
             return;
         }
 
-        if ($packageId) {
-            $brand = BrandReferral::find($brandId);
-            if ($brand && $brand->active_package) {
-                Notification::make()->danger()->title('This brand already has an active package.')->send();
-
-                return;
+        // Add-ons only but brand has no plan: assign default free plan.
+        if (! $packageId && ! empty($addonIdsToCharge)) {
+            $freePackage = $brand->active_package
+                ?? Package::query()->where('default_package', true)->first()
+                ?? Package::query()->where('slug', 'free')->first();
+            if ($freePackage) {
+                $packageId = $freePackage->id;
             }
         }
 
@@ -250,7 +319,7 @@ class PurchasePackages extends Page
             'company_id' => $user->company_id,
             'brand_id' => $brandId,
             'package_id' => $packageId ?: null,
-            'addon_ids' => array_values($addonIds),
+            'addon_ids' => $addonIdsToCharge,
         ]);
 
         $checkoutUrl = app(\App\Services\StripeCheckoutService::class)->createCheckoutSession($pending);

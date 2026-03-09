@@ -26,7 +26,7 @@ class BrandPackagesTable
                     ->label('Package/Addon')
                     ->searchable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('EUR')
                     ->sortable(),
                 TextColumn::make('purchase_date')
                     ->date()
