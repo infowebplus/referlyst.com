@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="@yield('meta_description', 'Launch and manage referral programs in minutes. No complex setup. Just growth.')">
+    <meta name="robots" content="noindex, nofollow">
 
     <title>@yield('title', config('app.name'))</title>
 
@@ -14,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
 
-    @if (file_exists(public_path('build/manifest.json')) && !file_exists(public_path('hot')))
+    @if (file_exists(public_path('hot')) || file_exists(public_path('build/manifest.json')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 
@@ -87,7 +88,7 @@
                     <a href="{{ auth()->user()->type === 'admin' ? url('/sadm') : url('/referral') }}" class="block rounded-lg px-4 py-3 text-sm font-medium text-emerald-400 hover:bg-gray-800/80">Dashboard</a>
                 @else
                     <a href="{{ route('register') }}" class="block rounded-lg px-4 py-3 text-sm font-medium text-emerald-400 hover:bg-gray-800/80">Get Started</a>
-                @endguest
+                @endauth
             </nav>
         </div>
     </header>
@@ -136,7 +137,7 @@
             <div class="mt-6 flex flex-col gap-4 border-t border-gray-800/60 pt-6 md:flex-row md:items-center md:justify-between ">
                 <p class="text-sm text-gray-500">&copy; {{ date('Y') }} Referlyst. All rights reserved.</p>
                 <p class="text-sm text-gray-500">
-                    Part of <a href="https://uphold.ro/en/brands" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors rounded">UPHOLD Group</a>.
+                    Product by <a href="https://infowebplus.com" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors rounded">Infowebplus</a>.
                 </p>
             </div>
         </x-marketing.container>

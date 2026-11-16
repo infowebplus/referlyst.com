@@ -37,9 +37,9 @@
                             <a href="mailto:sales@referlyst.com" class="mt-2 inline-block text-blue-400 hover:text-blue-300 transition-colors">sales@referlyst.com</a>
                         </div>
                         <div class="rounded-2xl border border-gray-800 bg-gray-900/80 p-8">
-                            <h2 class="text-lg font-semibold text-white">Part of UPHOLD Group</h2>
+                            <h2 class="text-lg font-semibold text-white">Product by Infowebplus</h2>
                             <p class="mt-3 text-gray-400">
-                                Referlyst is part of <a href="https://uphold.ro/en/brands" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors">UPHOLD Group</a>.
+                                Referlyst is a product by <a href="https://infowebplus.com" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors">Infowebplus</a>.
                             </p>
                         </div>
                         <p class="text-sm text-gray-500">

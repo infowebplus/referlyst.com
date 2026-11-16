@@ -8,7 +8,7 @@
         <x-marketing.container class="max-w-3xl">
             <h1 class="text-5xl font-bold tracking-tight text-white">About Referlyst</h1>
             <p class="mt-6 text-lg text-gray-300 leading-relaxed">
-                Referlyst is a platform that helps businesses grow through referral marketing. Referlyst is part of <a href="https://uphold.ro/en/brands" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors">UPHOLD Group</a>.
+                Referlyst is a platform that helps businesses grow through referral marketing. Referlyst is a product by <a href="https://infowebplus.com" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors">Infowebplus</a>.
             </p>
             <p class="mt-4 text-lg text-gray-300 leading-relaxed">
                 Our goal is simple: make it easy for companies to turn satisfied customers into active promoters. Instead of relying only on ads, businesses can grow through the most trusted form of marketing — recommendations from real people.
