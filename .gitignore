@@ -44,3 +44,6 @@ Thumbs.db
 /site/node_modules
 /site/dist
 /site/*.html
+
+# Local Netlify folder
+.netlify
