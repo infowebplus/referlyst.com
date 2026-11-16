@@ -1,0 +1,81 @@
+[
+  {
+    "slug": "free",
+    "name": "Free",
+    "price": 0,
+    "short_description": "Perfect for testing referral marketing.",
+    "domain_structure": "referlyst.com/brand",
+    "badge": null,
+    "cta_label": "Start for free",
+    "email_notifications": true,
+    "no_of_referrers": 10,
+    "no_of_referrers_brands": 1,
+    "commission_tracking": true,
+    "export_csv": true,
+    "custom_branding": false,
+    "custom_landing_page": false,
+    "limitations": ["Referlyst branding on referral pages"],
+    "features": [
+      "1 brand",
+      "Up to 10 referrers",
+      "Referral & commission tracking",
+      "Email notifications",
+      "CSV export"
+    ]
+  },
+  {
+    "slug": "starter",
+    "name": "Starter",
+    "price": 12,
+    "short_description": "Best for growing businesses. Clear reason to upgrade.",
+    "domain_structure": "brand.referlyst.com",
+    "badge": "Most Popular",
+    "cta_label": "Choose plan",
+    "email_notifications": true,
+    "no_of_referrers": 250,
+    "no_of_referrers_brands": 3,
+    "commission_tracking": true,
+    "export_csv": true,
+    "custom_branding": true,
+    "custom_landing_page": false,
+    "limitations": [],
+    "features": [
+      "Up to 3 brands",
+      "Up to 250 referrers",
+      "Referral & commission tracking",
+      "Email notifications",
+      "CSV export",
+      "Custom branding (logo + colors)",
+      "Subdomain hosting",
+      "Remove Referlyst branding"
+    ]
+  },
+  {
+    "slug": "growth",
+    "name": "Growth",
+    "price": 29,
+    "short_description": "Unlimited brands & referrers, custom domain, priority support.",
+    "domain_structure": "Custom domain",
+    "badge": null,
+    "cta_label": "Choose plan",
+    "email_notifications": true,
+    "no_of_referrers": 0,
+    "no_of_referrers_brands": 0,
+    "commission_tracking": true,
+    "export_csv": true,
+    "custom_branding": true,
+    "custom_landing_page": true,
+    "limitations": [],
+    "features": [
+      "Unlimited brands",
+      "Unlimited referrers",
+      "Referral & commission tracking",
+      "Email notifications",
+      "CSV export",
+      "Custom branding",
+      "Custom domain support",
+      "API Access",
+      "Priority support"
+    ]
+  }
+]

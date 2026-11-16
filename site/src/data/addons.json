@@ -1,0 +1,17 @@
+[
+  {
+    "name": "API Access",
+    "price": 19,
+    "description": "API access for embedding the referral form into your application."
+  },
+  {
+    "name": "Extra Referrers",
+    "price": 9,
+    "description": "+500 referrers."
+  },
+  {
+    "name": "Extra custom domain",
+    "price": 9,
+    "description": "Extra custom domain."
+  }
+]

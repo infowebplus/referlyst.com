@@ -1,0 +1,73 @@
+---
+title: FAQ – Referlyst
+description: Frequently asked questions about Referlyst and referral programs.
+---
+<section class="bg-gray-950 py-24">
+    <div class="mx-auto w-full max-w-3xl px-6">
+        <div class="mx-auto text-center">
+            <h1 class="text-5xl font-bold tracking-tight text-white">Frequently Asked Questions</h1>
+            <p class="mt-6 text-lg text-gray-300">Quick answers about Referlyst and referral marketing.</p>
+        </div>
+        <div class="mt-20 space-y-2" x-data="{ openIndex: 0 }">
+            <div class="rounded-xl border border-gray-800 bg-gray-900 transition-colors hover:border-gray-700" :class="{ 'ring-1 ring-blue-500/50 border-blue-500/50': openIndex === 0 }">
+                <button type="button" @click="openIndex = openIndex === 0 ? -1 : 0" class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left" :aria-expanded="openIndex === 0">
+                    <span class="text-lg font-semibold text-white">What is Referlyst?</span>
+                    <span class="shrink-0 text-gray-400 transition-transform" :class="openIndex === 0 ? 'rotate-180' : ''">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                </button>
+                <div x-show="openIndex === 0" x-cloak class="overflow-hidden border-t border-gray-800">
+                    <p class="px-6 pb-5 pt-2 text-gray-400">Referlyst is a platform that helps businesses create and manage referral programs. You set the rewards and rules; we handle tracking, links, and payouts.</p>
+                </div>
+            </div>
+            <div class="rounded-xl border border-gray-800 bg-gray-900 transition-colors hover:border-gray-700" :class="{ 'ring-1 ring-blue-500/50 border-blue-500/50': openIndex === 1 }">
+                <button type="button" @click="openIndex = openIndex === 1 ? -1 : 1" class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left" :aria-expanded="openIndex === 1">
+                    <span class="text-lg font-semibold text-white">How do referral programs work?</span>
+                    <span class="shrink-0 text-gray-400 transition-transform" :class="openIndex === 1 ? 'rotate-180' : ''">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                </button>
+                <div x-show="openIndex === 1" x-cloak class="overflow-hidden border-t border-gray-800">
+                    <p class="px-6 pb-5 pt-2 text-gray-400">Customers receive a unique referral link they can share with friends. When someone signs up or purchases through that link, the referral is tracked and rewards can be issued automatically.</p>
+                </div>
+            </div>
+            <div class="rounded-xl border border-gray-800 bg-gray-900 transition-colors hover:border-gray-700" :class="{ 'ring-1 ring-blue-500/50 border-blue-500/50': openIndex === 2 }">
+                <button type="button" @click="openIndex = openIndex === 2 ? -1 : 2" class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left" :aria-expanded="openIndex === 2">
+                    <span class="text-lg font-semibold text-white">Do I need technical knowledge to use Referlyst?</span>
+                    <span class="shrink-0 text-gray-400 transition-transform" :class="openIndex === 2 ? 'rotate-180' : ''">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                </button>
+                <div x-show="openIndex === 2" x-cloak class="overflow-hidden border-t border-gray-800">
+                    <p class="px-6 pb-5 pt-2 text-gray-400">No. Referlyst is designed to be simple and easy to set up. You can launch a program from the dashboard without writing code. Developers can use our API for deeper integration.</p>
+                </div>
+            </div>
+            <div class="rounded-xl border border-gray-800 bg-gray-900 transition-colors hover:border-gray-700" :class="{ 'ring-1 ring-blue-500/50 border-blue-500/50': openIndex === 3 }">
+                <button type="button" @click="openIndex = openIndex === 3 ? -1 : 3" class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left" :aria-expanded="openIndex === 3">
+                    <span class="text-lg font-semibold text-white">Can I upgrade my plan later?</span>
+                    <span class="shrink-0 text-gray-400 transition-transform" :class="openIndex === 3 ? 'rotate-180' : ''">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                </button>
+                <div x-show="openIndex === 3" x-cloak class="overflow-hidden border-t border-gray-800">
+                    <p class="px-6 pb-5 pt-2 text-gray-400">Yes. You can upgrade your plan at any time. Changes apply at the next billing cycle. No long-term lock-in.</p>
+                </div>
+            </div>
+            <div class="rounded-xl border border-gray-800 bg-gray-900 transition-colors hover:border-gray-700" :class="{ 'ring-1 ring-blue-500/50 border-blue-500/50': openIndex === 4 }">
+                <button type="button" @click="openIndex = openIndex === 4 ? -1 : 4" class="flex w-full items-center justify-between gap-4 text-left px-6 py-5" :aria-expanded="openIndex === 4">
+                    <span class="text-lg font-semibold text-white">Do referral programs really work?</span>
+                    <span class="shrink-0 text-gray-400 transition-transform" :class="openIndex === 4 ? 'rotate-180' : ''">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </span>
+                </button>
+                <div x-show="openIndex === 4" x-cloak class="overflow-hidden border-t border-gray-800">
+                    <p class="px-6 pb-5 pt-2 text-gray-400">Yes. Referral programs are one of the most effective growth channels because people trust recommendations from friends. Referred customers often convert at 3–5x the rate of other channels.</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-20 rounded-2xl border border-gray-800 bg-gray-900 px-8 py-10 text-center">
+            <p class="text-gray-400">Still have questions?</p>
+            <a href="/contact" class="mt-6 inline-flex items-center justify-center rounded-lg border border-gray-700 px-6 py-3 text-sm font-medium text-gray-300 transition-all duration-200 hover:border-gray-600 hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-950">Contact us</a>
+        </div>
+    </div>
+</section>
